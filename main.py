@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import streamlit as st
 from mpl_toolkits.mplot3d import Axes3D
 
+
+st.set_page_config(page_title='Antenne Active', page_icon=None,layout = 'wide', initial_sidebar_state = 'auto')
+
 # Fonction pour le diagramme d'antenne horizontal
 def A_EH(phi, phi_3dB_rad, Am):
     phi_rad = np.deg2rad(phi)
