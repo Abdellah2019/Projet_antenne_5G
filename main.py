@@ -125,14 +125,14 @@ with tab1:
 
 with tab2:
     # Saisie des paramètres par l'utilisateur
-    N_v = st.slider("Nombre de colonnes", min_value=1, max_value=10, value=4)
-    N_h = st.slider("Nombre de lignes", min_value=1, max_value=10, value=4)
+    N_v = st.slider("Nombre de colonnes N_v", min_value=1, max_value=16, value=4)
+    N_h = st.slider("Nombre de lignes N_h", min_value=1, max_value=16, value=4)
     d_v = st.slider("Espacement vertical (longueur d'onde)", min_value=0.1, max_value=2.0, value=0.5)
     d_h = st.slider("Espacement horizontal (longueur d'onde)", min_value=0.1, max_value=2.0, value=0.5)
     lam = st.slider("Longueur d'onde (m)", min_value=0.01, max_value=1.0, value=0.1)
     theta_i_max = st.slider("Angle d'inclinaison max (degrés)", min_value=0, max_value=180, value=65)
-    phi_i_max = st.slider("Angle d'azimut max (degrés)", min_value=0, max_value=360, value=65)
-    A_e = st.slider("Gain élémentaire (dB)", min_value=1, max_value=50, value=10)
+    phi_i_max = st.slider("Angle d'azimut max (degrés)", min_value=-180, max_value=180, value=65)
+    #A_e = st.slider("Gain élémentaire (dB)", min_value=1, max_value=50, value=10)
     
     # Convertir les angles en radians pour les calculs
     theta_i_max_rad = np.deg2rad(theta_i_max)
@@ -152,30 +152,30 @@ with tab2:
     if st.button("Diagramme Composite 2D"):
         # Calcul du diagramme composite
         A_Beam_values = np.zeros_like(phi_values)  # Initialisation du tableau résultant
+        A_e=A_E(phi_i_max_rad,theta_i_max_rad, G_Emax, phi_3dB_rad, theta_3dB_rad, Am, SLA_v,offset)
+        
 
         for j in range(len(phi_values)):
             A_Beam_values[j] = A_Beam(theta_i_max, np.deg2rad(phi_values[j]), 
                                     A_e, N_v, N_h, d_v, d_h, lam, theta_i_max_rad, phi_i_max_rad)
-                
-        print("Shape of A_Beam_values:", A_Beam_values.shape)
-        print("Shape of theta_values:", theta_values.shape)
-        print("Shape of phi_values:", phi_values.shape)
-        #A_Beam_values = A_Beam_values.T
+            
        
-        print(A_Beam_values)
-        # Trouver l'index du gain maximal
-       
+                        
+        print("phi_i_max_rad",phi_i_max_rad)
+        print("theta_i_max_rad",theta_i_max_rad)
+        
         
         
         fig_r = plt.figure()
-        ax_r = fig_r.add_subplot(111, projection='polar')
-        phi_values_rad = np.deg2rad(phi_values)  # Conversion des degrés en radians pour le plot radial
-        # Ajuster l'orientation de l'axe polaire pour que 0° soit en haut
         
+        ax_r = fig_r.add_subplot(projection='polar')
+        # Ajuster l'orientation de l'axe polaire pour que 0° soit en haut
+        ax_r.set_theta_zero_location('E')
+        phi_values_rad = np.deg2rad(phi_values)  # Conversion des degrés en radians pour le plot radial
         #for i in range(len(theta_values)):
         ax_r.plot(phi_values_rad,A_Beam_values)  # Utilisation des valeurs horizontales
         ax_r.set_title("Diagramme radial")
-        #ax_r.legend(loc='upper right', bbox_to_anchor=(1.2, 1.0))  # Légende pour chaque courbe
+        ax_r.legend(loc='upper left', bbox_to_anchor=(1.2, 1.0))  # Légende pour chaque courbe
         st.pyplot(fig_r)
         
     if st.button("Diagramme Composite 3D"):
